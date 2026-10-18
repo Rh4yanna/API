@@ -1,0 +1,7 @@
+.env
+.env.*
+!.env.example
+**/auth.json
+**/vendor/
+**/node_modules/
+.cache/

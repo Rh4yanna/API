@@ -1,0 +1,692 @@
+{
+  "info": {
+    "name": "CineCatálogo - API Laravel",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Execute de 00 a 09. Sem chave externa. Use um api_id ainda nao salvo nos favoritos. O POST usa os detalhes reais. A exclusao remove somente o registro criado na execucao."
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000/api"
+    },
+    {
+      "key": "api_id",
+      "value": "58611129-2dbc-4a81-a72f-77ddfc1b1b49"
+    },
+    {
+      "key": "filme_id",
+      "value": ""
+    },
+    {
+      "key": "filme_catalogo",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "00 - Listar catalogo sem chave",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/catalogo",
+        "description": "Resposta esperada: HTTP 200. Os exemplos sao ilustrativos; o fluxo usa dados reais da API."
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.collectionVariables.unset('filme_id'); pm.collectionVariables.unset('filme_catalogo');"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "pm.test('Catalogo com filmes', () => pm.expect(pm.response.json().data).to.be.an('array').that.is.not.empty);"
+            ]
+          }
+        }
+      ],
+      "response": [
+        {
+          "name": "Exemplo HTTP 200",
+          "originalRequest": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/catalogo",
+            "description": "Resposta esperada: HTTP 200. Os exemplos sao ilustrativos; o fluxo usa dados reais da API."
+          },
+          "status": "OK",
+          "code": 200,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"data\": [\n    {\n      \"api_id\": \"58611129-2dbc-4a81-a72f-77ddfc1b1b49\",\n      \"titulo\": \"My Neighbor Totoro\",\n      \"ano\": \"1988\",\n      \"genero\": null,\n      \"sinopse\": null,\n      \"poster\": null,\n      \"nota\": 9,\n      \"comentario\": \"Gostei do filme.\"\n    }\n  ],\n  \"meta\": {\n    \"total\": 22,\n    \"pagina\": 1\n  }\n}"
+        }
+      ]
+    },
+    {
+      "name": "01 - Pesquisar filme",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/pesquisar-filmes?titulo=totoro&pagina=1",
+        "description": "Resposta esperada: HTTP 200. Os exemplos sao ilustrativos; o fluxo usa dados reais da API."
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.collectionVariables.unset('filme_id'); pm.collectionVariables.unset('filme_catalogo');"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "pm.test('Lista e paginacao', () => { const json=pm.response.json(); pm.expect(json.data).to.be.an('array'); pm.expect(json.meta.total).to.be.a('number'); });"
+            ]
+          }
+        }
+      ],
+      "response": [
+        {
+          "name": "Exemplo HTTP 200",
+          "originalRequest": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/pesquisar-filmes?titulo=totoro&pagina=1",
+            "description": "Resposta esperada: HTTP 200. Os exemplos sao ilustrativos; o fluxo usa dados reais da API."
+          },
+          "status": "OK",
+          "code": 200,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"data\": [\n    {\n      \"api_id\": \"58611129-2dbc-4a81-a72f-77ddfc1b1b49\",\n      \"titulo\": \"My Neighbor Totoro\",\n      \"ano\": \"1988\",\n      \"genero\": null,\n      \"sinopse\": null,\n      \"poster\": null,\n      \"nota\": 9,\n      \"comentario\": \"Gostei do filme.\"\n    }\n  ],\n  \"meta\": {\n    \"total\": 1,\n    \"pagina\": 1\n  }\n}"
+        }
+      ]
+    },
+    {
+      "name": "02 - Consultar detalhes externos",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/detalhes-filme?api_id={{api_id}}",
+        "description": "Resposta esperada: HTTP 200. Os exemplos sao ilustrativos; o fluxo usa dados reais da API."
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.collectionVariables.unset('filme_catalogo');"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "pm.test('Identificador correto', () => pm.expect(pm.response.json().data.api_id).to.eql(pm.collectionVariables.get('api_id')));",
+              "if(pm.response.code===200){ pm.collectionVariables.set('filme_catalogo',JSON.stringify({...pm.response.json().data,nota:9,comentario:'Gostei do filme.'})); }"
+            ]
+          }
+        }
+      ],
+      "response": [
+        {
+          "name": "Exemplo HTTP 200",
+          "originalRequest": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/detalhes-filme?api_id={{api_id}}",
+            "description": "Resposta esperada: HTTP 200. Os exemplos sao ilustrativos; o fluxo usa dados reais da API."
+          },
+          "status": "OK",
+          "code": 200,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"data\": {\n    \"api_id\": \"58611129-2dbc-4a81-a72f-77ddfc1b1b49\",\n    \"titulo\": \"My Neighbor Totoro\",\n    \"ano\": \"1988\",\n    \"genero\": null,\n    \"sinopse\": null,\n    \"poster\": null,\n    \"nota\": 9,\n    \"comentario\": \"Gostei do filme.\"\n  }\n}"
+        }
+      ]
+    },
+    {
+      "name": "03 - Cadastrar favorito",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/filmes",
+        "description": "Resposta esperada: HTTP 201. Os exemplos sao ilustrativos; o fluxo usa dados reais da API.",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"api_id\": \"58611129-2dbc-4a81-a72f-77ddfc1b1b49\",\n  \"titulo\": \"My Neighbor Totoro\",\n  \"ano\": \"1988\",\n  \"genero\": null,\n  \"sinopse\": null,\n  \"poster\": null,\n  \"nota\": 9,\n  \"comentario\": \"Gostei do filme.\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.collectionVariables.unset('filme_id'); const filme=pm.collectionVariables.get('filme_catalogo'); if(filme){ pm.request.body.update(filme); }else{ pm.execution.skipRequest(); }"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201', () => pm.response.to.have.status(201));",
+              "if(pm.response.code===201){ pm.collectionVariables.set('filme_id',pm.response.json().data.id); }",
+              "pm.test('ID local criado', () => pm.expect(pm.response.json().data.id).to.be.a('number'));"
+            ]
+          }
+        }
+      ],
+      "response": [
+        {
+          "name": "Exemplo HTTP 201",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/filmes",
+            "description": "Resposta esperada: HTTP 201. Os exemplos sao ilustrativos; o fluxo usa dados reais da API.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"api_id\": \"58611129-2dbc-4a81-a72f-77ddfc1b1b49\",\n  \"titulo\": \"My Neighbor Totoro\",\n  \"ano\": \"1988\",\n  \"genero\": null,\n  \"sinopse\": null,\n  \"poster\": null,\n  \"nota\": 9,\n  \"comentario\": \"Gostei do filme.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "status": "Created",
+          "code": 201,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"data\": {\n    \"id\": 1,\n    \"api_id\": \"58611129-2dbc-4a81-a72f-77ddfc1b1b49\",\n    \"titulo\": \"My Neighbor Totoro\",\n    \"ano\": \"1988\",\n    \"genero\": null,\n    \"sinopse\": null,\n    \"poster\": null,\n    \"nota\": 9,\n    \"comentario\": \"Gostei do filme.\",\n    \"created_at\": \"2026-10-17T12:00:00+00:00\",\n    \"updated_at\": \"2026-10-17T12:00:00+00:00\"\n  }\n}"
+        }
+      ]
+    },
+    {
+      "name": "04 - Listar favoritos",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/filmes",
+        "description": "Resposta esperada: HTTP 200. Os exemplos sao ilustrativos; o fluxo usa dados reais da API."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "pm.test('Lista de favoritos', () => pm.expect(pm.response.json().data).to.be.an('array'));"
+            ]
+          }
+        }
+      ],
+      "response": [
+        {
+          "name": "Exemplo HTTP 200",
+          "originalRequest": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/filmes",
+            "description": "Resposta esperada: HTTP 200. Os exemplos sao ilustrativos; o fluxo usa dados reais da API."
+          },
+          "status": "OK",
+          "code": 200,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"data\": [\n    {\n      \"id\": 1,\n      \"api_id\": \"58611129-2dbc-4a81-a72f-77ddfc1b1b49\",\n      \"titulo\": \"My Neighbor Totoro\",\n      \"ano\": \"1988\",\n      \"genero\": null,\n      \"sinopse\": null,\n      \"poster\": null,\n      \"nota\": 9,\n      \"comentario\": \"Gostei do filme.\",\n      \"created_at\": \"2026-10-17T12:00:00+00:00\",\n      \"updated_at\": \"2026-10-17T12:00:00+00:00\"\n    }\n  ]\n}"
+        }
+      ]
+    },
+    {
+      "name": "05 - Consultar favorito",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/filmes/{{filme_id}}",
+        "description": "Resposta esperada: HTTP 200. Os exemplos sao ilustrativos; o fluxo usa dados reais da API."
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if(!pm.collectionVariables.get('filme_id')){ pm.execution.skipRequest(); }"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "pm.test('ID local correto', () => pm.expect(String(pm.response.json().data.id)).to.eql(String(pm.collectionVariables.get('filme_id'))));"
+            ]
+          }
+        }
+      ],
+      "response": [
+        {
+          "name": "Exemplo HTTP 200",
+          "originalRequest": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/filmes/{{filme_id}}",
+            "description": "Resposta esperada: HTTP 200. Os exemplos sao ilustrativos; o fluxo usa dados reais da API."
+          },
+          "status": "OK",
+          "code": 200,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"data\": {\n    \"id\": 1,\n    \"api_id\": \"58611129-2dbc-4a81-a72f-77ddfc1b1b49\",\n    \"titulo\": \"My Neighbor Totoro\",\n    \"ano\": \"1988\",\n    \"genero\": null,\n    \"sinopse\": null,\n    \"poster\": null,\n    \"nota\": 9,\n    \"comentario\": \"Gostei do filme.\",\n    \"created_at\": \"2026-10-17T12:00:00+00:00\",\n    \"updated_at\": \"2026-10-17T12:00:00+00:00\"\n  }\n}"
+        }
+      ]
+    },
+    {
+      "name": "06 - Atualizar nota e comentario",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/filmes/{{filme_id}}",
+        "description": "Resposta esperada: HTTP 200. Os exemplos sao ilustrativos; o fluxo usa dados reais da API.",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nota\": 10,\n  \"comentario\": \"Muito bom.\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if(!pm.collectionVariables.get('filme_id')){ pm.execution.skipRequest(); }"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "pm.test('Avaliacao atualizada', () => { const filme=pm.response.json().data; pm.expect(filme.nota).to.eql(10); pm.expect(filme.comentario).to.eql('Muito bom.'); });"
+            ]
+          }
+        }
+      ],
+      "response": [
+        {
+          "name": "Exemplo HTTP 200",
+          "originalRequest": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/filmes/{{filme_id}}",
+            "description": "Resposta esperada: HTTP 200. Os exemplos sao ilustrativos; o fluxo usa dados reais da API.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nota\": 10,\n  \"comentario\": \"Muito bom.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"data\": {\n    \"id\": 1,\n    \"api_id\": \"58611129-2dbc-4a81-a72f-77ddfc1b1b49\",\n    \"titulo\": \"My Neighbor Totoro\",\n    \"ano\": \"1988\",\n    \"genero\": null,\n    \"sinopse\": null,\n    \"poster\": null,\n    \"nota\": 10,\n    \"comentario\": \"Muito bom.\",\n    \"created_at\": \"2026-10-17T12:00:00+00:00\",\n    \"updated_at\": \"2026-10-17T12:00:00+00:00\"\n  }\n}"
+        }
+      ]
+    },
+    {
+      "name": "07 - Rejeitar nota invalida",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/filmes/{{filme_id}}",
+        "description": "Resposta esperada: HTTP 422. Os exemplos sao ilustrativos; o fluxo usa dados reais da API.",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nota\": 11\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if(!pm.collectionVariables.get('filme_id')){ pm.execution.skipRequest(); }"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 422', () => pm.response.to.have.status(422));",
+              "pm.test('Erro de validacao', () => pm.expect(pm.response.json().errors).to.have.property('nota'));"
+            ]
+          }
+        }
+      ],
+      "response": [
+        {
+          "name": "Exemplo HTTP 422",
+          "originalRequest": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/filmes/{{filme_id}}",
+            "description": "Resposta esperada: HTTP 422. Os exemplos sao ilustrativos; o fluxo usa dados reais da API.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nota\": 11\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "status": "Unprocessable Entity",
+          "code": 422,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"message\": \"A nota deve estar entre 0 e 10.\",\n  \"errors\": {\n    \"nota\": [\n      \"A nota deve estar entre 0 e 10.\"\n    ]\n  }\n}"
+        }
+      ]
+    },
+    {
+      "name": "08 - Excluir favorito criado",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/filmes/{{filme_id}}",
+        "description": "Resposta esperada: HTTP 204. Os exemplos sao ilustrativos; o fluxo usa dados reais da API."
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if(!pm.collectionVariables.get('filme_id')){ pm.execution.skipRequest(); }"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 204', () => pm.response.to.have.status(204));",
+              "pm.test('Sem corpo', () => pm.expect(pm.response.text()).to.eql(''));"
+            ]
+          }
+        }
+      ],
+      "response": [
+        {
+          "name": "Exemplo HTTP 204",
+          "originalRequest": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/filmes/{{filme_id}}",
+            "description": "Resposta esperada: HTTP 204. Os exemplos sao ilustrativos; o fluxo usa dados reais da API."
+          },
+          "status": "No Content",
+          "code": 204,
+          "header": [],
+          "body": ""
+        }
+      ]
+    },
+    {
+      "name": "09 - Confirmar exclusao",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/filmes/{{filme_id}}",
+        "description": "Resposta esperada: HTTP 404. Os exemplos sao ilustrativos; o fluxo usa dados reais da API."
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if(!pm.collectionVariables.get('filme_id')){ pm.execution.skipRequest(); }"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 404', () => pm.response.to.have.status(404));"
+            ]
+          }
+        }
+      ],
+      "response": [
+        {
+          "name": "Exemplo HTTP 404",
+          "originalRequest": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/filmes/{{filme_id}}",
+            "description": "Resposta esperada: HTTP 404. Os exemplos sao ilustrativos; o fluxo usa dados reais da API."
+          },
+          "status": "Not Found",
+          "code": 404,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"message\": \"Filme ou rota não encontrado.\"\n}"
+        }
+      ]
+    }
+  ]
+}
